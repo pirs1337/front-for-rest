@@ -1,3 +1,4 @@
+import {getUserByToken} from '../user/user.js';
 
 function register(url, urls, redirect, showErrors){
 
@@ -21,7 +22,8 @@ function register(url, urls, redirect, showErrors){
         $.post(url+'register', formData, function(data){
             redirect(urls[2]);
         }).fail(function (jqXHR) {
-            showErrors(jqXHR.responseJSON.error.errors)
+            let errorResponse = jqXHR.responseJSON.error;
+            showErrors(errorResponse);
         });
     })
 
@@ -43,10 +45,15 @@ function login(url, urls, redirect, showErrors){
             password: password
         }
 
-        $.post(url+'login', formData, function(data){
-            redirect(urls[1]);
+        $.post(url+'login', formData, async function(data){
+            console.log(data.token);
+            localStorage.setItem('token', data.token);
+            let user = await getUserByToken(url, data.token);
+
+            redirect(urls[4]+`id=${user.data.id}`);
         }).fail(function (jqXHR) {
-            showErrors(jqXHR.responseJSON.error.errors)
+            let errorResponse = jqXHR.responseJSON.error;
+            showErrors(errorResponse);
         });
     })
 

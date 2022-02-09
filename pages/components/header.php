@@ -8,7 +8,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
           <ul class="navbar-nav mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/pages/unauth/auth/login.php">Login</a>
+              <a class="nav-link" id="login-link" href="/pages/unauth/auth/login.php">Login</a>
             </li>
           </ul>
           <!-- <form class="d-flex">

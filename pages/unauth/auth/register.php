@@ -1,6 +1,6 @@
 <? $title = 'Register'; require_once '../../components/layout.php' ?>
 
-<div class="container">
+<main class="container">
     <h1 class="mb-5"><? echo $title ?></h1>
     <form id="register-form">
         <div class="mb-3">
@@ -22,7 +22,7 @@
         <button type="submit" class="btn btn-primary"><? echo $title ?></button>
         <span><a href="./login.php">Have an account?</a></span>
     </form>
-</div>
+</main>
 
 <? require_once '../../components/footer.php' ?>
 </body>

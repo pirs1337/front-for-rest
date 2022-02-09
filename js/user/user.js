@@ -6,4 +6,15 @@ async function getUserById(url, user_id){
      return user;
 }
 
-export {getUserById}
+async function getUserByToken(url, token){
+    let user = await $.get(url+`user/token/${token}`, function(data){
+         return data;
+     });
+ 
+     return user;
+}
+
+export {getUserById, getUserByToken}
+
+
+

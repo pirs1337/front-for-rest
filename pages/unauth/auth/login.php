@@ -1,6 +1,6 @@
 <? $title = 'Login'; require_once '../../components/layout.php' ?>
 
-<div class="container">
+<main class="container">
     <h1 class="mb-5"><? echo $title ?></h1>
     <form id="login-form">
         <div class="mb-3">
@@ -14,7 +14,7 @@
         <button type="submit" class="btn btn-primary"><? echo $title ?></button>
         <span><a href="./register.php">No account?</a></span>
     </form>
-</div>
+</main>
 
 <? require_once '../../components/footer.php' ?>
 </body>
