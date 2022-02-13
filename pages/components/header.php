@@ -7,9 +7,9 @@
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
           <ul class="navbar-nav mb-2 mb-lg-0">
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <a class="nav-link" id="login-link" href="/pages/unauth/auth/login.php">Login</a>
-            </li>
+            </li> -->
           </ul>
           <!-- <form class="d-flex">
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">

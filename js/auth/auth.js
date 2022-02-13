@@ -1,37 +1,34 @@
-import {getUserByToken} from '../user/user.js';
+import {getAuthUser} from '../user/user.js';
+import {showErrors} from '../error/error.js';
+import {redirect} from '../redirect/redirect.js';
 
-function register(url, urls, redirect, showErrors){
-
+function register(url, urls){
     const form = $('#register-form');
 
     form.submit(function (e){
         e.preventDefault();
 
-        let login = $('#login').val();
-        let email = $('#email').val()
-        let password = $('#password').val();
-        let password_confirmation = $('#password_confirmation').val();
+        let formData = new FormData($(this).get(0));
 
-        let formData  = {
-            login: login,
-            email: email,
-            password: password,
-            password_confirmation: password_confirmation
-        }
-
-        $.post(url+'register', formData, function(data){
-            redirect(urls[2]);
-        }).fail(function (jqXHR) {
-            let errorResponse = jqXHR.responseJSON.error;
-            showErrors(errorResponse);
+        $.ajax({
+            url: url+'register',
+            method: 'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            success: function(data){
+               return redirect(urls[2]);
+            },
+            error: function(jqXHR){
+                let errorResponse = jqXHR.responseJSON.error;
+                showErrors(errorResponse);
+            }
         });
     })
 
 }
 
-
-function login(url, urls, redirect, showErrors){
-
+function login(url, urls){
     const form = $('#login-form');
 
     form.submit(function (e){
@@ -46,11 +43,14 @@ function login(url, urls, redirect, showErrors){
         }
 
         $.post(url+'login', formData, async function(data){
-            console.log(data.token);
             localStorage.setItem('token', data.token);
-            let user = await getUserByToken(url, data.token);
+            let user = getAuthUser(url, data.token);
 
-            redirect(urls[4]+`id=${user.data.id}`);
+            user.then(res => {
+               return redirect(`${urls[3]}?id=${res.data.id}`);
+
+            }).catch(e => console.log(e))
+            
         }).fail(function (jqXHR) {
             let errorResponse = jqXHR.responseJSON.error;
             showErrors(errorResponse);

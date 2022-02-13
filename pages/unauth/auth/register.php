@@ -19,6 +19,10 @@
             <label for="password" class="form-label">Password Confirmation</label>
             <input type="password" class="form-control" name="password_confirmation" id="password_confirmation">
         </div>
+        <div class="mb-3">
+            <label for="avatar" class="form-label">Upload avatar</label>
+            <input class="form-control" name="avatar" type="file" id="avatar">
+        </div>
         <button type="submit" class="btn btn-primary"><? echo $title ?></button>
         <span><a href="./login.php">Have an account?</a></span>
     </form>

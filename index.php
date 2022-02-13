@@ -6,5 +6,6 @@
 </main>
 
 <? require_once './pages/components/footer.php' ?>
+
 </body>
 </html>
