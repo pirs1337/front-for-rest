@@ -1,4 +1,4 @@
-import { getPosts } from '../post/post.js';
+import { createPost, getPosts } from '../post/post.js';
 import { register, login } from '../auth/auth.js';
 import { home } from '../auth/home.js';
 import { auth } from '../middleware/auth.js';
@@ -15,7 +15,7 @@ function getUrlParams(){
 
 let homePage = `/pages/auth/home.php`;
 
-const urls = ['/', '/pages/unauth/auth/register.php', '/pages/unauth/auth/login.php', homePage, homePage+'?'+getUrlParams()];
+const urls = ['/', '/pages/unauth/auth/register.php', '/pages/unauth/auth/login.php', homePage, homePage+'?'+getUrlParams(), '/pages/auth/post/add.php'];
 
 const url = 'http://127.0.0.1:8000/api/';
 
@@ -39,6 +39,9 @@ function router() {
           break;
           case urls[4]:
             home(url)
+          break;
+          case urls[5]:
+            createPost(url);
           break;
         default:
         // redirectNotFound();

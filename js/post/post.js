@@ -1,6 +1,8 @@
-import { showErrors } from "../error/error.js";
+import { showErrors} from "../error/error.js";
 import { urls , currentUrl} from "../router/router.js";
 import { getAuthUser, getUserById } from "../user/user.js";
+import { showSuccessMsg} from "../msg/msg.js";
+import token from "../main.js";
 
 function getPosts(url){
     $.get(url+'posts', function(data){
@@ -16,9 +18,15 @@ function getUserPosts(url, id){
 }
 
 function postCard(url, data, getUserById = false){
-    $('.row').append('');
+    $('.row').html('');
 
-    let authUser = getAuthUser(url, localStorage.getItem('token'));
+    let authUser = null;
+    if (token) {
+        authUser = getAuthUser(url, token);
+    } else {
+        authUser = false;
+    }
+    
 
     data.forEach(async function(element, i) {
        
@@ -52,18 +60,24 @@ function postCard(url, data, getUserById = false){
             $('.card-body').eq(i).append(userInfo);
         }
 
-       
-        if (urls[4] == currentUrl) {
+        editAndDeleteBtns(authUser, element, i, url);
+    });
+
+}
+
+function editAndDeleteBtns(authUser, element, i, url){
+    if (urls[4] == currentUrl) {
+        if (authUser) {
             authUser.then(res => {
                 if (res.data.id == element.user_id) {
                     let buttons = 
                         `<div class="d-flex">
-                            <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#exampleModal${element.id}">Edit</button>
-                            <button type="button" class="btn btn-danger">Delete</button>
+                            <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#exampleModalEdit${element.id}">Edit</button>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModalDelete${element.id}">Delete</button>
                         </div>`;
                         
                     $('.card-body').eq(i).append(buttons);
-        
+
                     let formEdit = $(
                         `<form id="edit-post">
                             <div class="mb-3">
@@ -84,37 +98,49 @@ function postCard(url, data, getUserById = false){
                             <input type="hidden" name="post_id" id="post_id" value=${element.id}>
                             <button type="submit" class="btn btn-success">Save</button>
                         </form>`);
+
+                    let formDelete = $(
+                        `<p>Do you really want to delete the  <b>${element.title}</b> post?</p>
+                        <form id="delete-post">
+                            <input type="hidden" name="post_id" id="post_id" value=${element.id}>
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>`)
         
-                    modal(element.id, i, 'Edit', formEdit, url);  
+                    modal(element.id, i, 'Edit', formEdit, url, editPost);
+                    modal(element.id, i, 'Delete', formDelete, url, deletePost);  
                 }
             }).catch(e => {
                 console.log(e);
             })
-
         }
-    });
-
+    }
 }
 
 function editPost(i, url) {
-    $('form#edit-post').eq(i).submit(async function (e){
+    $('form#edit-post').eq(i).submit(function (e){
         e.preventDefault();
-
-        let formData = new FormData($(this).get(0));
+        
+        let form = $(this)[0];
+        let formData = new FormData(form);
         formData.append('_method', 'PUT');
 
         $.ajax({
             url: `${url}posts/${formData.get('post_id')}`,
             method: 'POST',
             headers: {
-                Authorization: 'Bearer '+localStorage.getItem('token'),
+                Authorization: 'Bearer '+token,
             }, 
             processData: false,
             contentType: false,
             data: formData,
             dataType: 'json',
             success: function(data){
-                window.location.reload();
+                $('form#edit-post .img-fluid').attr('src', data.data.img);
+                showSuccessMsg(data.msg, form);
+
+                $('#exampleModalEdit'+data.data.id).on('hidden.bs.modal', function () {
+                    getUserPosts(url, data.data.user_id);
+                })
             },
             error: function(jqXHR){
                 let errorResponse = jqXHR.responseJSON.error
@@ -125,14 +151,14 @@ function editPost(i, url) {
 }
 
 
-function modal(id, i, title, body, url){
+function modal(id, i, title, body, url, form){
    
     let modal = 
-        `<div class="modal fade" id="exampleModal${id}" tabindex="-1" aria-labelledby="exampleModalLabel${id}" aria-hidden="true">
+        `<div class="modal fade" id="exampleModal${title+id}" tabindex="-1" aria-labelledby="exampleModal${title}Label${id}" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel${id}">${title}</h5>
+                <h5 class="modal-title" id="exampleModal${title}Label${id}">${title}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body"></div>
@@ -141,17 +167,65 @@ function modal(id, i, title, body, url){
         </div>`
 
     $('.card-body').eq(i).append(modal);
-    $('.modal-body').eq(i).append(body);
+    $(`#exampleModal${title+id} .modal-body`).append(body);
 
-    editPost(i, url);
+    form(i, url);
 }
 
 
-function createPost() {
+function createPost(url) {
     $('#create-post').submit(function (e){
         e.preventDefault();
-        console.log(123);
+        let form = $(this)[0];
+        let formData = new FormData(form);
+
+        $.ajax({
+            url: `${url}posts`,
+            method: 'POST',
+            headers: {
+                Authorization: 'Bearer '+token,
+            }, 
+            processData: false,
+            contentType: false,
+            data: formData,
+            dataType: 'json',
+            success: function(data){
+                form.reset();
+                showSuccessMsg('Post was created', form); 
+            },
+            error: function(jqXHR){
+                let errorResponse = jqXHR.responseJSON.error
+                showErrors(errorResponse);
+            }
+        });
     })
 }
 
-export {getPosts, getUserPosts}
+function deletePost(i, url){
+    console.log(i);
+    $('form#delete-post').eq(i).submit(function (e){
+        e.preventDefault();
+        let form = $(this)[0];
+        let formData = new FormData(form);
+
+        $.ajax({
+            url: `${url}posts/${formData.get('post_id')}`,
+            method: 'DELETE',
+            headers: {
+                Authorization: 'Bearer '+token,
+            },
+            dataType: 'json',
+            success: function(data){
+                location.reload();
+            },
+            error: function(jqXHR){
+                // let errorResponse = jqXHR.responseJSON.error
+                // showErrors(errorResponse);
+                console.log(jqXHR);
+            }
+        });
+        
+    })
+}
+
+export {getPosts, getUserPosts, createPost}

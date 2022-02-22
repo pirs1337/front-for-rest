@@ -11,7 +11,9 @@ function home(url){
 
     user.then(res => {
         $('h1').append(' '+res.data.login);
-        $('h1').after(`<img class="img-fluid mb-5" alt="user avatar" src=${res.data.avatar}>`);
+        $('h1').after('<p>User avatar</p>');
+        $('p').after(`<img class="img-fluid mb-5" alt="user avatar" src=${res.data.avatar}>`);
+        $('img').after('<p>Posts</p>')
         getUserPosts(url, id);
 
     }).catch(e => {

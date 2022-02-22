@@ -1,6 +1,6 @@
 import {getAuthUser} from '../user/user.js';
 import {showErrors} from '../error/error.js';
-import {redirect} from '../redirect/redirect.js';
+import {redirect, redirectAuth} from '../redirect/redirect.js';
 
 function register(url, urls){
     const form = $('#register-form');
@@ -28,7 +28,7 @@ function register(url, urls){
 
 }
 
-function login(url, urls){
+function login(url){
     const form = $('#login-form');
 
     form.submit(function (e){
@@ -46,13 +46,13 @@ function login(url, urls){
             localStorage.setItem('token', data.token);
             let user = getAuthUser(url, data.token);
 
-            user.then(res => {
-               return redirect(`${urls[3]}?id=${res.data.id}`);
-
+            user.then(res => { 
+               return redirectAuth(res);
             }).catch(e => console.log(e))
             
         }).fail(function (jqXHR) {
             let errorResponse = jqXHR.responseJSON.error;
+            console.log(errorResponse);
             showErrors(errorResponse);
         });
     })

@@ -2,6 +2,7 @@ function showErrors(errors){
     $('.alert-danger').remove();
 
     if ('errors' in errors) {
+      console.log(errors);
       eachError(errors.errors)
     } else {
       eachError(errors)
