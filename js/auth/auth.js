@@ -7,7 +7,6 @@ function register(url, urls){
 
     form.submit(function (e){
         e.preventDefault();
-
         let formData = new FormData($(this).get(0));
 
         $.ajax({
@@ -17,11 +16,11 @@ function register(url, urls){
             contentType: false,
             data: formData,
             success: function(data){
-               return redirect(urls[2]);
+               return redirect(urls.guest.login);
             },
             error: function(jqXHR){
                 let errorResponse = jqXHR.responseJSON.error;
-                showErrors(errorResponse);
+                showErrors(errorResponse, e.target);
             }
         });
     })
@@ -53,7 +52,7 @@ function login(url){
         }).fail(function (jqXHR) {
             let errorResponse = jqXHR.responseJSON.error;
             console.log(errorResponse);
-            showErrors(errorResponse);
+            showErrors(errorResponse, e.target);
         });
     })
 

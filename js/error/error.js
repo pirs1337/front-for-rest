@@ -1,18 +1,17 @@
-function showErrors(errors){
+function showErrors(errors, form){
     $('.alert-danger').remove();
 
     if ('errors' in errors) {
-      console.log(errors);
-      eachError(errors.errors)
+      eachError(errors.errors, form)
     } else {
-      eachError(errors)
+      eachError(errors, form)
     }
 }
 
-function eachError(errors){
+function eachError(errors, form){
   for (const key in errors) {
     let alert = `<div class="alert alert-danger">${errors[key]}</div>`;
-    $(`#${key}`).after(alert);
+    $(`form#${form.id} #${key}`).after(alert);
   }
 }
 

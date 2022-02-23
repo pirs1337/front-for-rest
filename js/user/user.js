@@ -20,9 +20,7 @@ async function getAuthUser(url, token){
         });
     
         return user;
-    } catch (error) {
-          
-    }   
+    } catch (error) {}   
    
 }
 

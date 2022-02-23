@@ -9,11 +9,11 @@ function redirectNotFound() {
 }
 
 function redirectAuth(user){
-    return redirect(`${urls[3]}?id=${user.data.id}`);
+    return redirect(`${urls.public.home}?id=${user.data.id}`);
 }
 
 function redirectNotAuth(){
-    return redirect(urls[2]);
+    return redirect(urls.guest.login);
 }
 
 export {redirect, redirectNotFound, redirectAuth, redirectNotAuth}

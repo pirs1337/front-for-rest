@@ -1,7 +1,7 @@
 import { showErrors} from "../error/error.js";
-import { urls , currentUrl} from "../router/router.js";
 import { getAuthUser, getUserById } from "../user/user.js";
-import { showSuccessMsg} from "../msg/msg.js";
+import { urls, currentUrl } from "../router/router.js";
+import { errorMsg, showSuccessMsg } from "../msg/msg.js";
 import token from "../main.js";
 
 function getPosts(url){
@@ -66,7 +66,7 @@ function postCard(url, data, getUserById = false){
 }
 
 function editAndDeleteBtns(authUser, element, i, url){
-    if (urls[4] == currentUrl) {
+    if (urls.public.homeParams == currentUrl) {
         if (authUser) {
             authUser.then(res => {
                 if (res.data.id == element.user_id) {
@@ -91,7 +91,7 @@ function editAndDeleteBtns(authUser, element, i, url){
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <div class="mb-2"><img class="img-fluid" src=${element.img}></div>
+                                <div class="mb-2"><img class="img-fluid" src=${element.img || ''}></div>
                                 <label for="img" class="form-label">Upload image</label>
                                 <input class="form-control" name="img" type="file" id="img">
                             </div>
@@ -109,8 +109,6 @@ function editAndDeleteBtns(authUser, element, i, url){
                     modal(element.id, i, 'Edit', formEdit, url, editPost);
                     modal(element.id, i, 'Delete', formDelete, url, deletePost);  
                 }
-            }).catch(e => {
-                console.log(e);
             })
         }
     }
@@ -143,8 +141,9 @@ function editPost(i, url) {
                 })
             },
             error: function(jqXHR){
+                console.log(jqXHR);
                 let errorResponse = jqXHR.responseJSON.error
-                showErrors(errorResponse);
+                showErrors(errorResponse, form);
             }
         });
     })
@@ -191,18 +190,17 @@ function createPost(url) {
             dataType: 'json',
             success: function(data){
                 form.reset();
-                showSuccessMsg('Post was created', form); 
+                showSuccessMsg(data.msg, form); 
             },
             error: function(jqXHR){
                 let errorResponse = jqXHR.responseJSON.error
-                showErrors(errorResponse);
+                showErrors(errorResponse, form);
             }
         });
     })
 }
 
 function deletePost(i, url){
-    console.log(i);
     $('form#delete-post').eq(i).submit(function (e){
         e.preventDefault();
         let form = $(this)[0];
@@ -217,11 +215,6 @@ function deletePost(i, url){
             dataType: 'json',
             success: function(data){
                 location.reload();
-            },
-            error: function(jqXHR){
-                // let errorResponse = jqXHR.responseJSON.error
-                // showErrors(errorResponse);
-                console.log(jqXHR);
             }
         });
         

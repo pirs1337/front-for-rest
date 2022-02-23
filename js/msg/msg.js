@@ -1,7 +1,14 @@
 function showSuccessMsg(msg, element){
-    let alert = `<div class="alert alert-success" role="alert">${msg}</div>`
+    $('.alert-danger').remove();
+    let alert = `<div class="alert alert-success" role="alert">${msg}</div>`;
     $(element).prepend(alert);
     hideMsg('.alert-success');
+}
+
+function errorMsg(msg, element){
+    $('.alert-danger').remove();
+    let alert = `<div class="alert alert-danger" role="alert">${msg}</div>`;
+    $(element).prepend(alert);
 }
 
 function hideMsg(element){
@@ -10,4 +17,4 @@ function hideMsg(element){
     }, 2000);
 }
 
-export {showSuccessMsg}
+export {showSuccessMsg, errorMsg}

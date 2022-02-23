@@ -1,7 +1,7 @@
 import { createPost, getPosts } from '../post/post.js';
 import { register, login } from '../auth/auth.js';
 import { home } from '../auth/home.js';
-import { auth } from '../middleware/auth.js';
+import { auth , guest } from '../middleware/middleware.js';
 import { redirectNotFound } from '../redirect/redirect.js';
 
 const currentUrl = document.location.pathname+document.location.search;
@@ -13,38 +13,51 @@ function getUrlParams(){
   return urlParams;
 }
 
-let homePage = `/pages/auth/home.php`;
+// let homePage = `/pages/auth/home.php`;
 
-const urls = ['/', '/pages/unauth/auth/register.php', '/pages/unauth/auth/login.php', homePage, homePage+'?'+getUrlParams(), '/pages/auth/post/add.php'];
+const urls = {
+  'auth': {
+    'createPost' :'/pages/auth/post/create.php'
+  },
+  'guest': {
+   'register':'/pages/unauth/auth/register.php',
+    'login': '/pages/unauth/auth/login.php'
+  },
+  'public': {
+    'main': '/',
+    'home': '/pages/auth/home.php',
+    'homeParams': '/pages/auth/home.php'+'?'+getUrlParams()
+  }
+};
+
+
+// '/', '/pages/unauth/auth/register.php', '/pages/unauth/auth/login.php', homePage, homePage+'?'+getUrlParams(), '/pages/auth/post/create.php'
 
 const url = 'http://127.0.0.1:8000/api/';
 
-console.log(currentUrl);
-
 function router() {
     switch (currentUrl) {
-        case urls[0]:
+        case urls.public.main:
             getPosts(url);
           break;
-        case urls[1]:
+        case urls.guest.register:
           register(url, urls);
-          auth(url, urls, currentUrl)
+          guest();
           break;
-        case urls[2]:
+        case urls.guest.login:
             login(url, urls, currentUrl);
-            auth(url, urls, currentUrl)
+            guest();
           break;
-        case urls[3]:
+        case urls.public.home:
             redirectNotFound();
           break;
-          case urls[4]:
+          case urls.public.homeParams:
             home(url)
           break;
-          case urls[5]:
+          case urls.auth.createPost:
             createPost(url);
+            auth();
           break;
-        default:
-        // redirectNotFound();
     }
 }
 
